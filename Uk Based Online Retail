@@ -1,0 +1,102 @@
+--Top 10 countries
+
+SELECT
+    Country,
+    SUM(Quantity * UnitPrice) AS TotalSales
+FROM
+  `my-data-project-11391.online_retail.London`
+WHERE
+    Country IS NOT NULL 
+GROUP BY
+    Country
+ORDER BY
+    TotalSales DESC
+LIMIT 10
+
+
+--Top 10 products sold
+
+
+SELECT 
+  StockCode,
+  Description,
+  Sum(Quantity) As TotalQuantitySold
+FROM 
+  `my-data-project-11391.online_retail.London` 
+GROUP BY
+  StockCode,
+  Description
+ORDER BY
+  TotalQuantitySold DESC
+LIMIT 10
+
+
+--Sales per month 
+
+
+SELECT
+    EXTRACT(YEAR FROM InvoiceDate) AS SalesYear,
+    EXTRACT(MONTH FROM InvoiceDate) AS SalesMonth,
+    SUM(Quantity) AS TotalQuantity
+FROM
+  `my-data-project-11391.online_retail.London`
+GROUP BY
+    SalesYear, SalesMonth
+ORDER BY
+    SalesYear, SalesMonth;
+
+
+--Revenue 2010 vs 2011
+
+
+SELECT
+    SUM(CASE WHEN EXTRACT(YEAR FROM InvoiceDate) = 2010 THEN Quantity * UnitPrice  ELSE 0 END) AS TotalRevenue2010,
+    SUM(CASE WHEN EXTRACT(YEAR FROM InvoiceDate) = 2011 THEN Quantity * UnitPrice ELSE 0 END) AS TotalRevenue2011
+FROM
+  `my-data-project-11391.online_retail.London`  
+WHERE
+    EXTRACT(YEAR FROM InvoiceDate) IN (2010, 2011);
+
+
+--Total orders vs avg order size
+
+
+SELECT
+    CustomerID,
+    COUNT(DISTINCT InvoiceNo) AS TotalOrders,
+    AVG(Quantity) AS AvgOrderSize
+FROM
+    `my-data-project-11391.online_retail.London`
+GROUP BY
+    CustomerID
+ORDER BY
+    TotalOrders DESC;
+
+
+How does this solve business problems?
+
+
+First, I used SQL to calculate various customer metrics such as the top selling countries, top sold products, sales per month,
+annual revenue comparison and total orders versus average order size. These metrics are essential to help identify which regions
+and time of the year the business should focus its marketing and sales efforts.
+
+Further more, I created SQL queries to generate visualizations, such as, bar charts, line charts, and maps to illustrate the distinction
+of purchasing trends and their corresponding contributions to the companies revenue.
+
+Finally, I presented the findings in a comprehensive report using Tableau, highlighting the unique characteristics of customer segements.
+By doing so, the company gained valuable insights into its customers base, allowing them to tailor marketing campaigns to improve on 
+retention and optimize revenue.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
