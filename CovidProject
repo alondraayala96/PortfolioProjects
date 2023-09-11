@@ -1,48 +1,89 @@
 SELECT *
-FROM `new-project-378200.covid.covid_vacs_deaths`
-Where continent is not null
-order by 3, 4
+FROM 
+ `new-project-378200.covid.covid_vacs_deaths`
+Where 
+ continent is not null
+Order By 
+ 3, 4
 
-SELECT location, date, total_cases, new_cases, total_deaths, population 
-FROM `new-project-378200.covid.covid_vacs_deaths` 
-order by 1,2
+SELECT 
+ location, 
+ date, 
+ total_cases, 
+ new_cases, 
+ total_deaths, 
+ population 
+FROM 
+ `new-project-378200.covid.covid_vacs_deaths` 
+Order By 
+ 1,2
 
 
 -- looking at total cases vs total deaths
 
-SELECT location, date, total_cases, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
-FROM `new-project-378200.covid.covid_vacs_deaths` 
-WHERE location like '%us%'
-order by 1, 2
+SELECT 
+ location, 
+ date, 
+ total_cases, 
+ total_deaths, 
+ (total_deaths/total_cases)*100 as DeathPercentage
+FROM 
+ `new-project-378200.covid.covid_vacs_deaths` 
+WHERE
+ location like '%us%'
+Order by 
+ 1, 2
 
 
 --looking at total cases vs population
 --shows what percentage of population got covid
 
 
-SELECT location, date, population, total_cases, (total_cases/population)*100 as PercentPopulationInfected
-FROM `new-project-378200.covid.covid_vacs_deaths` 
-Where location like '%us%'
-order by 1, 2
+SELECT
+ location, 
+ date, 
+ population, 
+ total_cases, 
+ (total_cases/population)*100 as PercentPopulationInfected
+FROM 
+ `new-project-378200.covid.covid_vacs_deaths` 
+Where 
+ location like '%us%'
+order by 
+ 1, 2
 
 --looking at countries with highest infection rate compared to population
  
-SELECT location, population, MAX(total_cases) as HighestInfectionCount, MAX((total_cases/population))*100 as PercentPopulationInfected
-FROM `new-project-378200.covid.covid_vacs_deaths` 
-Where location like '%us%'
-GROUP BY location, population
-order by PercentPopulationInfected desc
+SELECT 
+ location, 
+ population, 
+ MAX(total_cases) as HighestInfectionCount, 
+ MAX((total_cases/population))*100 as PercentPopulationInfected
+FROM 
+ `new-project-378200.covid.covid_vacs_deaths` 
+Where 
+ location like '%us%'
+GROUP BY 
+ location, population
+order by 
+ PercentPopulationInfected desc
 
 
 --showing countries with highest death count per population
 
 
-SELECT location, MAX(cast(total_cases as int)) as TotalDeathCount
-FROM `new-project-378200.covid.covid_vacs_deaths` 
+SELECT 
+ location, 
+ MAX(cast(total_cases as int)) as TotalDeathCount
+FROM 
+ `new-project-378200.covid.covid_vacs_deaths` 
 --Where location like '%us%'
-WHERE continent is not null
-GROUP BY location
-order by TotalDeathCount desc
+WHERE 
+ continent is not null
+GROUP BY
+ location
+order by 
+ TotalDeathCount desc
 
 
 --lets break things down by continent
@@ -50,42 +91,63 @@ order by TotalDeathCount desc
 --showing the continents with the highest death count per population
 
 
-SELECT continent, MAX(cast(total_cases as int)) as TotalDeathCount
-FROM `new-project-378200.covid.covid_vacs_deaths` 
+SELECT 
+ continent, 
+ MAX(cast(total_cases as int)) as TotalDeathCount
+FROM 
+ `new-project-378200.covid.covid_vacs_deaths` 
 --Where location like '%us%'
-WHERE continent is not null
-GROUP BY continent
-order by TotalDeathCount desc
+WHERE
+ continent is not null
+GROUP BY 
+ continent
+order by 
+ TotalDeathCount desc
 
 
 --global numbers
 
 
 SELECT 
-  date, 
-  SUM(new_cases) AS total_new_cases, 
-  SUM(CAST(new_deaths AS INT)) AS total_new_deaths, 
-  CASE 
-    WHEN SUM(new_cases) > 0 THEN (SUM(CAST(new_deaths AS INT)) / SUM(new_cases)) * 100
-    ELSE 0 -- Handle division by zero by providing a default value
-  END AS DeathPercentage
+ date, 
+ SUM(new_cases) AS total_new_cases, 
+ SUM(CAST(new_deaths AS INT)) AS total_new_deaths, 
+ CASE 
+   WHEN SUM(new_cases) > 0 THEN (SUM(CAST(new_deaths AS INT)) / SUM(new_cases)) * 100
+   ELSE 0 -- Handle division by zero by providing a default value
+ END AS DeathPercentage
 FROM `new-project-378200.covid.covid_vacs_deaths`
 -- WHERE location LIKE '%us%'
-WHERE continent IS NOT NULL
-GROUP BY date
+WHERE 
+ continent IS NOT NULL
+GROUP BY 
+ date
 
 
 --looking at total population vs vaccination
 
 
 With PopvsVac as(
-Select continent, location, date, population, new_vaccinations, sum(cast(new_vaccinations as int)) over (partition by location order by location, date) as RollingPeopleVaccinated
+Select 
+ continent, 
+ location, 
+ date, 
+ population, 
+ new_vaccinations, 
+ sum(cast(new_vaccinations as int)) over (partition by location order by location, date) as RollingPeopleVaccinated
 FROM `new-project-378200.covid.covid_vacs_deaths` 
 Where continent is not null
 and new_vaccinations is not null
 --order by 2, 3
 )
-select continent, location, date, population, new_vaccinations, RollingPeopleVaccinated, (RollingPeopleVaccinated/population)*100
+select 
+ continent, 
+ location, 
+ date, 
+ population, 
+ new_vaccinations, 
+ RollingPeopleVaccinated, 
+ (RollingPeopleVaccinated/population)*100
 from PopvsVac
 
 
@@ -93,14 +155,40 @@ from PopvsVac
 
 
 With PercentPopulationVaccinated AS ( 
-Select continent, location, date, population, new_vaccinations, sum(cast(new_vaccinations as int)) over (partition by location order by location, date) as RollingPeopleVaccinated
+Select 
+ continent, 
+ location, 
+ date, 
+ population, 
+ new_vaccinations, 
+ sum(cast(new_vaccinations as int)) over (partition by location order by location, date) as RollingPeopleVaccinated
 FROM `new-project-378200.covid.covid_vacs_deaths` 
 Where continent is not null
 and new_vaccinations is not null
 --order by 2, 3
 )
-select continent, location, date, population, new_vaccinations, RollingPeopleVaccinated,
+select 
+ continent, 
+ location, 
+ date, 
+ population, 
+ new_vaccinations, 
+ RollingPeopleVaccinated,
 case when population <> 0 then (RollingPeopleVaccinated/population)*100
 else 0
 end as PercentVaccinated
 from PercentPopulationVaccinated
+
+How does this solve pandemic problem?
+
+I used SQL to look at the wordlwide covid cases. In this project, I looked at total cases, total deaths and vaccinations per
+country. These metrics are essential to determine which countries have been infected the most. This allows for the health 
+departments to make executive desisions on whether their country/region needs to require vaccinations or to implement any
+other strategies to keep their region safe from covid.
+
+Furthermore, I used Tableau to create graphs and mappings to illustrate which regions have been impacted rhe most. This allows
+to visually see the percentage of the population that has been infected worldwide. This provides the health department/government
+helpful insights to make ethical decisions for the communcity.
+
+
+
