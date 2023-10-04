@@ -1,0 +1,93 @@
+--total employees
+
+SELECT
+count(*) AS TotalEmployees
+FROM
+  `my-data-project-11391.Employee.turnoverdata`
+
+  
+--total employees by department 
+
+SELECT
+    Department,
+    COUNT(*) AS TotalEmployees,
+FROM
+  `my-data-project-11391.Employee.turnoverdata`
+GROUP BY
+    Department
+
+
+--number of employees that left based on department
+    --sales and retail leave more
+SELECT
+Department,
+COUNTIF(`left` = true) AS EmployeesLeft
+FROM
+`my-data-project-11391.Employee.turnoverdata`
+GROUP BY
+Department;
+
+--total number of employees that left
+
+
+SELECT
+COUNT(*) AS TotalEmployeesLeft
+FROM
+`my-data-project-11391.Employee.turnoverdata`
+WHERE
+`left` = true;
+
+--employees that left based on salary
+  --medium salary has higest turnover rate
+
+SELECT
+Salary,
+SUM(CASE WHEN `left` = true THEN 1 ELSE 0 END) AS EmployeesLeft
+FROM
+`my-data-project-11391.Employee.turnoverdata`    
+GROUP BY
+Salary;
+
+
+--Number of promotions based on deparment
+  --sales and retail have highest number of promos
+
+SELECT
+Department,
+SUM(CASE WHEN Promoted = 1 THEN 1 ELSE 0 END) AS PromotionsCount
+FROM
+`my-data-project-11391.Employee.turnoverdata`  
+GROUP BY
+Department;
+
+-- number of bonuses based on department
+--sales and retail are given more bonuses
+SELECT
+Department,
+SUM(CASE WHEN bonus = 1 THEN 1 ELSE 0 END) AS BonusCount
+FROM
+`my-data-project-11391.Employee.turnoverdata`  
+GROUP BY
+Department;
+
+
+--average hours worked per month
+--all have same average
+SELECT
+Department,
+AVG(`avg_hrs_month`) AS AverageHoursPerMonth
+FROM
+`my-data-project-11391.Employee.turnoverdata`  
+GROUP BY
+Department;
+
+How this can help a business problem or help a business out:
+
+I used SQL to analyze various metrics based on department, such as, finding the attrition rate of the company, 
+which department has the highest turnover rate, which gets the most bonuses, hours worked per month, promotions and salaries.  
+In these findings, it has been proven that sales employees have the highest attrition rate, however, they are also the ones with 
+the most bonuses and promotions. 
+
+Once I pulled all the information needed, I used the SQL queries to create visualizations on Tableau, such as, pie charts and bar 
+charts to illustrate which department has the highest attrition rate. This allows for upper management to visually see which department
+is leaving more frequently based on the salary they obtain, and then, allows for making improvements within the company based on the trends. 
